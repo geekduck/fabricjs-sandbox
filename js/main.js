@@ -39,22 +39,12 @@ window.onload = () => {
     canvas.add(rect2);
 
     img.on("selected", (e) => {
-      console.dir(e);
       canvas.discardActiveObject();
-      // canvas.discardActiveObject();
-
-      const target = e.selected;
       const objects = [img, rect1, rect2];
-
       const group = new fabric.Group(objects);
       objects.forEach(object => canvas.remove(object));
       canvas.add(group);
-      canvas.setActiveObject(group);
-      // canvas.setActiveGroup(group);
-      // canvas.requestRenderAll();
-      canvas.renderAll();
-
-      // e.e.preventDefault();
+      canvas.__onMouseDown(e.e);
     });
   }).catch((error) => console.log("error"));
 };
