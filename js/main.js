@@ -41,10 +41,39 @@ window.onload = () => {
     img.on("selected", (e) => {
       canvas.discardActiveObject();
       const objects = [img, rect1, rect2];
-      const group = new fabric.Group(objects);
+      const group = new fabric.Group(objects, {subTargetCheck: true});
       objects.forEach(object => canvas.remove(object));
       canvas.add(group);
       canvas.__onMouseDown(e.e);
+
+      group.on('deselected', () => {
+          destroyGroup(group);
+      });
+
+      group.on('mousedown', (options) => {
+          console.dir(options);
+          if (options.subTargets.filter((object) => object.get("type") === "image").length === 0) {
+              console.log("マップ以外をクリック");
+              const target = options.subTargets.filter((object) => object.get("type") !== "image")[0];
+              destroyGroup(options.target);
+              console.dir(target);
+              canvas.setActiveObject(target);
+              canvas.__onMouseDown(options.e);
+          } else {
+              console.log("マップをクリック");
+          }
+      });
     });
   }).catch((error) => console.log("error"));
+
+  function destroyGroup(group) {
+      console.log('destroyGroup');
+      if (group == null) return;
+
+      const canvas = group.canvas;
+      group.off();
+      group.getObjects().forEach((object) => canvas.add(object));
+      group.destroy();
+      canvas.remove(group);
+  }
 };
