@@ -13,18 +13,18 @@ window.onload = () => {
 
     const canvas = new fabric.Canvas('c');
 
-    function createImageObject(url) {
+    function loadImage(url, imgOptions) {
         return new Promise((resolve, reject) => {
-            fabric.Image.fromURL(url, function(img) {
+            fabric.util.loadImage(url, function(img) {
             console.dir(arguments);
-                if (img) {
-                    img.set({left: 10, top: 30});
-                    resolve(img);
-                } else {
-                    reject();
-                }
-            });
-        });
+            if (img) {
+                resolve(new fabric.Image(img, imgOptions));
+            } else {
+                console.log("ERROR Reject!!");
+                reject();
+            }
+        }, null, imgOptions && imgOptions.crossOrigin);
+    });
     }
 
     function createRect(props) {
@@ -42,40 +42,40 @@ window.onload = () => {
     const rect2 = createRect({x: 100, y: 50});
 
     const imageUrl = 'assets/image1.png';
-    createImageObject(imageUrl).then((img) => {
+    loadImage(imageUrl).then((img) => {
         canvas.add(img);
-    canvas.add(rect1);
-    canvas.add(rect2);
+        canvas.add(rect1);
+        canvas.add(rect2);
 
-    img.on("selected", (e) => {
-        canvas.discardActiveObject();
-    const objects = [img, rect1, rect2];
-    const group = new fabric.Group(objects, {subTargetCheck: true});
-    objects.forEach(object => canvas.remove(object));
-    canvas.add(group);
-    canvas.__onMouseDown(e.e);
+        img.on("selected", (e) => {
+            canvas.discardActiveObject();
+        const objects = [img, rect1, rect2];
+        const group = new fabric.Group(objects, {subTargetCheck: true});
+        objects.forEach(object => canvas.remove(object));
+        canvas.add(group);
+        canvas.__onMouseDown(e.e);
 
-    group.on('deselected', () => {
-        destroyGroup(group);
-});
+        group.on('deselected', () => {
+                destroyGroup(group);
+        });
 
-    group.on('mousedown', (options) => {
-        if (options.subTargets.filter((object) => object.get("type") === "image").length === 0) {
-        console.log("Image以外をクリック");
-        const target = options.subTargets.filter((object) => object.get("type") !== "image")[0];
-        if (target == null) {
-            // コントロールとかスケールをクリックしたとき
-            return;
-        }
-        destroyGroup(options.target);
-        canvas.setActiveObject(target);
-        canvas.__onMouseDown(options.e);
-    } else {
-        console.log("Imageをクリック");
-    }
-});
-});
-}).catch((error) => console.log("error"));
+        group.on('mousedown', (options) => {
+            if (options.subTargets.filter((object) => object.get("type") === "image").length === 0) {
+            console.log("Image以外をクリック");
+            const target = options.subTargets.filter((object) => object.get("type") !== "image")[0];
+            if (target == null) {
+                // コントロールとかスケールをクリックしたとき
+                return;
+            }
+            destroyGroup(options.target);
+            canvas.setActiveObject(target);
+            canvas.__onMouseDown(options.e);
+                } else {
+                    console.log("Imageをクリック");
+                }
+            });
+        });
+    }).catch((error) => console.log("error"));
 
     function destroyGroup(group) {
         if (group == null)
