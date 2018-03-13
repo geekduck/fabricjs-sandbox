@@ -79,7 +79,7 @@ window.onload = () => {
             });
             objects.forEach(object => canvas.remove(object));
             canvas.add(group);
-            canvas.__onMouseDown(e.e);
+            canvas._setupCurrentTransform(e.e, group);
 
             group.on('deselected', () => {
                 destroyGroup(group);
@@ -95,7 +95,7 @@ window.onload = () => {
                     }
                     destroyGroup(options.target);
                     canvas.setActiveObject(target);
-                    canvas.__onMouseDown(options.e);
+                    canvas._setupCurrentTransform(options.e, target);
                 } else {
                     console.log("Imageをクリック");
                 }
