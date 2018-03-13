@@ -15,13 +15,13 @@ window.onload = () => {
 
     function loadImage(url, imgOptions) {
         return new Promise((resolve, reject) => {
-            fabric.util.loadImage(url, function(img) {
+            fabric.util.loadImage(url, function(img, error) {
                 console.dir(arguments);
-                if (img) {
-                    resolve(new fabric.Image(img, imgOptions));
-                } else {
+                if (error) {
                     console.log("ERROR Reject!!");
-                    reject();
+                    reject(error);
+                } else {
+                    resolve(new fabric.Image(img, imgOptions));
                 }
             }, null, imgOptions && imgOptions.crossOrigin);
         });
